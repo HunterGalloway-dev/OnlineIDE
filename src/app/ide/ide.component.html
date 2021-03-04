@@ -1,0 +1,146 @@
+<div class="container-fluid">
+  <div class="row">
+    <mat-toolbar color="primary">
+      <button mat-raised-button (click)="runCode()">
+        <mat-icon>
+          play_circle
+        </mat-icon>
+        Run
+      </button>
+    </mat-toolbar>
+  </div>
+  <div class="row viewport ">
+    <div class="col-s">
+      <mat-list>
+        <mat-list-item>
+          <button mat-icon-button class="row" (click)="toggleFileExplorer()">
+            <mat-icon>
+              folder
+            </mat-icon>
+          </button>
+        </mat-list-item>
+        <mat-list-item>
+          <button mat-icon-button class="row" (click)="toggleSettings()">
+            <mat-icon>
+              settings
+            </mat-icon>
+          </button>
+        </mat-list-item>
+        <mat-list-item *ngIf="ideSession.test">
+          <button mat-icon-button class="row" (click)="toggleTesting()">
+            <mat-icon>
+              dehaze
+            </mat-icon>
+          </button>
+        </mat-list-item>
+      </mat-list>
+    </div>
+    <!-- File Explorer -->
+    <div class="col-xs file-explorer" *ngIf="ideSession.showFileExplorer">
+      <app-file-explorer ></app-file-explorer>
+    </div>
+    <!-- Settings -->
+    <div class="col-xs file-explorer" *ngIf="ideSession.showSettings">
+      <mat-list>
+        <mat-list-item>
+          <mat-slide-toggle color="primary" [checked]="ideSession.test" (change)="change($event)">
+            Enable Testing
+          </mat-slide-toggle>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+        <mat-list-item>
+          Language
+        </mat-list-item>
+        <mat-list-item>
+          <mat-form-field appearance="fill">
+            <mat-label>Toppings</mat-label>
+            <mat-select multiple>
+              <mat-select-trigger>
+                {{toppings.value ? toppings.value[0] : ''}}
+                <span *ngIf="toppings.value?.length > 1" class="example-additional-selection">
+                  (+{{toppings.value.length - 1}} {{toppings.value?.length === 2 ? 'other' : 'others'}})
+                </span>
+              </mat-select-trigger>
+              <mat-option *ngFor="let topping of toppingList" [value]="topping">{{topping}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+      </mat-list>
+    </div>
+
+    <div class="col">
+      <div class="row">
+        <nav mat-tab-nav-bar>
+          <div mat-tab-link *ngFor="let openFile of ideSession.openedFiles" (click)="selectFile(openFile)">
+            {{openFile.fileName}}
+            <button mat-icon-button (click)="closeFile(openFile)">
+              <mat-icon>
+                close
+              </mat-icon>
+            </button>
+          </div>
+        </nav>
+      </div>
+      <div class="testing"*ngIf="ideSession.showTestingMenu">
+        <mat-card >
+          <mat-label>
+            Pick Testing Option:
+          </mat-label>
+          <mat-radio-group [(ngModel)]="ideSession.testingOption" class="radio-group">
+            <mat-radio-button color="primary" *ngFor="let opt of testingOptions" [value]="opt">
+              {{opt}}
+            </mat-radio-button>
+          </mat-radio-group>
+          <div *ngIf="ideSession.testingOption">
+            <mat-divider></mat-divider>
+            <div class="output" *ngIf="ideSession.testingOption == testingOptions[0]">
+              <mat-label>Output:</mat-label>
+              <mat-form-field appearance="fill">
+                <mat-label>Expected Output...</mat-label>
+                <textarea matInput></textarea>
+              </mat-form-field>
+            </div>
+            <div class="output" *ngIf="ideSession.testingOption == testingOptions[1]">
+              <mat-label>Inputs:</mat-label>
+              <mat-form-field appearance="fill">
+                <mat-label>Inputs...</mat-label>
+                <textarea matInput></textarea>
+              </mat-form-field>
+              <mat-label>Outputs:</mat-label>
+              <mat-form-field appearance="fill">
+                <mat-label>Outputs...</mat-label>
+                <textarea matInput></textarea>
+              </mat-form-field>
+            </div>
+            <div *ngIf="ideSession.testingOption == testingOptions[2]">
+              <mat-label>Select JUNIT Testing File</mat-label>
+              <mat-form-field appearance="fill">
+                <mat-label>Choose a file</mat-label>
+                <mat-select>
+                  <mat-option *ngFor="let file of getFiles()" [value]="file.fileName">
+                    {{ file.fileName }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <mat-divider></mat-divider>
+            <button mat-raised-button color="primary">Run Test</button>
+          </div>
+        </mat-card>
+      </div>
+      <div class="codeAndConsole">
+
+        <div class="row" style="height: 100%;">
+          <div class="code-editor" #editor></div>
+        </div>
+        <div class="row" style="height: 20%;">
+          <div class="console" #console></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
