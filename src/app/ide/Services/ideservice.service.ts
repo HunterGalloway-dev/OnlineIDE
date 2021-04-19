@@ -9,7 +9,7 @@ import { RunConfig } from '../Models/run-config';
 })
 export class IDEService {
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private ideService: IDEService) {
 
   }
 
@@ -27,11 +27,14 @@ export class IDEService {
     this.consoleObservable.next(input + "\n");
   }
 
-  public runCode(runConfig: RunConfig) {
+  public runCode(runConfig: RunConfig): String {
+    let ret = "";
     let req = JSON.stringify(runConfig);
-    this.http.post("http://localhost:8080/foo",req).subscribe(res => {
-      console.log(res);
+    this.http.post("http://localhost:8080/foo",req).subscribe((res: {Output: string}) => {
+      this.printToConsole(res.Output);
     });
+
+    return ret;
   }
 
 }
